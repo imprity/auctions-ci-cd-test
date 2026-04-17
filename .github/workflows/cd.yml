@@ -112,6 +112,8 @@ jobs:
 
           ECR_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}"
 
+          IMAGES_TO_DELETE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}*"
+
           COMPOSE_B64=$(base64 -w0 docker-compose.yml)
 
           cat > ssm-params.json <<JSON
@@ -122,6 +124,7 @@ jobs:
                   "cd /home/ec2-user/app",
                   "set +e",
                   "docker rm -v -f \$(docker ps -qa)",
+                  "docker rmi \$(docker images \"$IMAGES_TO_DELETE\" -q)",
                   "set -e",
                   "echo $COMPOSE_B64 | base64 -d - > docker-compose-prod.yml",
                   "docker pull \"$ECR_URI\"",
