@@ -58,8 +58,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       # ECR 로그인
       - name: Login to ECR
@@ -69,7 +69,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           SHORT_SHA=${{ steps.vars.outputs.short_sha }}
-          IMAGE_URI=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}
+          IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}
 
           # Docker 빌드 및 push
           docker build --platform linux/arm64 -t $IMAGE_URI:$SHORT_SHA .
@@ -89,8 +89,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       # 코드 가져오기 (네! 또 가져옵니다 :D)
       - name: Checkout code
@@ -102,10 +102,10 @@ jobs:
       - name: Tell EC2 to pull from docker and run it
         env:
           IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
-          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-          AWS_INSTANCE_ID: ${{ vars.AWS_INSTANCE_ID }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          AWS_INSTANCE_ID: ${{ secrets.AWS_INSTANCE_ID }}
 
         run: |
           set -euo pipefail
