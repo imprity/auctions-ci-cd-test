@@ -50,7 +50,9 @@ jobs:
 
       # JAR 빌드
       - name: Build JAR
-        run: ./gradlew bootJar
+        run: |
+          chmod +x gradlew
+          ./gradlew bootJar
 
       # AWS 자격증명 - OIDC
       - name: Configure AWS credentials
