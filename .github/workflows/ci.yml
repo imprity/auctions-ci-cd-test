@@ -1,0 +1,35 @@
+name: CI-BASIC
+
+# build가 되는지 확인
+
+on:
+  push:
+    branches: [ main , dev ]
+  pull_request:
+    branches: [ main , dev ]
+  workflow_dispatch: # 수동으로 적용 가능
+
+concurrency:
+  group: sanity-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Check Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "gradle"
+
+      - name: check if builds
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test

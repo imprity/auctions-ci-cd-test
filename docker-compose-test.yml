@@ -1,0 +1,16 @@
+services:
+
+  postgres-test:
+    image: pgvector/pgvector:pg17
+    container_name: auction-postgres-test
+    environment:
+      POSTGRES_DB: auction_test
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USERNAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
